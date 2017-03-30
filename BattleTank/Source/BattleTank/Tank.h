@@ -18,7 +18,8 @@ public:
 	void AimAt(FVector HitLocation);
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-			
+	UFUNCTION(BlueprintCallable, Category = Setup)
+	void SetBarrelReference(UStaticMeshComponent* BarrelToSet);
 protected:
 	// Called when the game starts or when spawned
 	UTankAimingComponent* TankAimingComponent = nullptr;
