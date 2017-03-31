@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+
 #include "BattleTank.h"
+#include "TankBarrel.h"
 #include "TankAimingComponent.h"
 
 
@@ -15,33 +17,42 @@ UTankAimingComponent::UTankAimingComponent()
 }
 
 
-
-// Called when the game starts
-void UTankAimingComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// ...
-	
-}
-
-
-// Called every frame
-void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
-void UTankAimingComponent::SetBarrelReference(UStaticMeshComponent * BarrelToSet)
+void UTankAimingComponent::SetBarrelReference(UTankBarrel* BarrelToSet)
 {
 	Barrel = BarrelToSet;
+
 }
 
-void UTankAimingComponent::AimAt(FVector HitLocation)
+void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 {
-	auto TankName = GetOwner()->GetName();
-	auto BarrelLocation = Barrel->GetComponentLocation();
-	UE_LOG(LogTemp, Warning, TEXT("%s Aiming at %s from %s"), *TankName, *HitLocation.ToString(),*BarrelLocation.ToString());
+	
+	if (!Barrel) { return; }
+
+	FVector LaunchVelocity;
+	FVector StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
+	bool bHaveAimSolution = UGameplayStatics::SuggestProjectileVelocity
+		 (
+			this,
+			LaunchVelocity,
+			StartLocation,
+			HitLocation,
+			LaunchSpeed
+			);
+
+	//Calculate OutlaunchVelocity
+	if(bHaveAimSolution)
+	{	
+		auto AimDirection = LaunchVelocity.GetSafeNormal();
+		MoveBarrel(AimDirection);
+	}
+}
+
+void UTankAimingComponent::MoveBarrel(FVector AimDirection)
+{
+	//find endpoint for barrel tip
+	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
+	auto AimAsRotator = AimDirection.Rotation();
+	auto DeltaRotation = AimAsRotator - BarrelRotator;
+	
+	Barrel->ElevateBarrel(5); //TODO remove magic number
 }
