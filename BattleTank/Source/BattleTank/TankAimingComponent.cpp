@@ -6,6 +6,7 @@
 #include "TankAimingComponent.h"
 
 
+
 // Sets default values for this component's properties
 UTankAimingComponent::UTankAimingComponent()
 {
@@ -15,7 +16,6 @@ UTankAimingComponent::UTankAimingComponent()
 
 	// ...
 }
-
 
 void UTankAimingComponent::SetBarrelReference(UTankBarrel* BarrelToSet)
 {
@@ -36,7 +36,11 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 			LaunchVelocity,
 			StartLocation,
 			HitLocation,
-			LaunchSpeed
+			LaunchSpeed,
+			 false,
+			 0,
+			 0,
+			 ESuggestProjVelocityTraceOption::DoNotTrace
 			);
 
 	//Calculate OutlaunchVelocity
@@ -52,7 +56,7 @@ void UTankAimingComponent::MoveBarrel(FVector AimDirection)
 	//find endpoint for barrel tip
 	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
 	auto AimAsRotator = AimDirection.Rotation();
-	auto DeltaRotation = AimAsRotator - BarrelRotator;
+	auto DeltaRotator = AimAsRotator - BarrelRotator;
 	
-	Barrel->ElevateBarrel(5); //TODO remove magic number
+	Barrel->ElevateBarrel(DeltaRotator.Pitch); //TODO remove magic number
 }

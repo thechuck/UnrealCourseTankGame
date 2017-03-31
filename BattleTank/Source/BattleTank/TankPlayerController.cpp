@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BattleTank.h"
+#include "Tank.h"
 #include "TankPlayerController.h"
 
 
@@ -26,12 +27,10 @@ void ATankPlayerController::BeginPlay()
 
 }
 
-
 ATank*  ATankPlayerController::GetControlledTank() const
 {	
 		return Cast<ATank>(GetPawn());	
 }
-
 
 //move tank barrel to point at crosshair so shot passes through crosshair.  
 void ATankPlayerController::AimAtCrosshair()
@@ -68,6 +67,7 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation) const
 	
 	return true;
 }
+
 bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVector& HitLocation) const
 {
 	FHitResult LineHitResult;
