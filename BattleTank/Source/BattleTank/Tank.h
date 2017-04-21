@@ -5,7 +5,9 @@
 #include "GameFramework/Pawn.h"
 #include "Tank.generated.h"
 
-class UTankBarrel;//Forward declaration
+//Forward declaration
+class UTankBarrel;
+class UTankTurret;
 class UTankAimingComponent;
 
 UCLASS()
@@ -20,6 +22,8 @@ public:
 	virtual void BeginPlay() override;
 	UFUNCTION(BlueprintCallable, Category = Setup)
 	void SetBarrelReference(UTankBarrel* BarrelToSet);
+	UFUNCTION(BlueprintCallable, Category = Setup)
+	void SetTurretReference(UTankTurret* TurretToSet);
 protected:
 	// Called when the game starts or when spawned
 	UTankAimingComponent* TankAimingComponent = nullptr;

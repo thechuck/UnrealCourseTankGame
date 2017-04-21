@@ -3,6 +3,7 @@
 
 #include "BattleTank.h"
 #include "TankBarrel.h"
+#include "TankTurret.h"
 #include "TankAimingComponent.h"
 
 
@@ -23,10 +24,15 @@ void UTankAimingComponent::SetBarrelReference(UTankBarrel* BarrelToSet)
 
 }
 
+void UTankAimingComponent::SetTurretReference(UTankTurret* TurretToSet)
+{
+	Turret = TurretToSet;
+}
+
 void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 {
 	
-	if (!Barrel) { return; }
+	if (!Barrel || !Turret) { return; }
 
 	FVector LaunchVelocity;
 	FVector StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
@@ -40,7 +46,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 			 false,
 			 0,
 			 0,
-			 ESuggestProjVelocityTraceOption::DoNotTrace
+			ESuggestProjVelocityTraceOption::DoNotTrace
 			);
 
 	//Calculate OutlaunchVelocity
@@ -48,7 +54,8 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 	{	
 		auto AimDirection = LaunchVelocity.GetSafeNormal();
 		MoveBarrel(AimDirection);
-	}
+		RotateTurret(AimDirection);
+	}	
 }
 
 void UTankAimingComponent::MoveBarrel(FVector AimDirection)
@@ -59,4 +66,14 @@ void UTankAimingComponent::MoveBarrel(FVector AimDirection)
 	auto DeltaRotator = AimAsRotator - BarrelRotator;
 	
 	Barrel->ElevateBarrel(DeltaRotator.Pitch); //TODO remove magic number
+	Turret->RotateTurret(DeltaRotator.Yaw);
+}
+
+void UTankAimingComponent::RotateTurret(FVector AimDirection)
+{
+	auto TurretRotator = Turret->GetRightVector().Rotation();
+	auto AimAsRotator = AimDirection.Rotation();
+	auto DeltaRotator = AimAsRotator + TurretRotator;
+
+	
 }
