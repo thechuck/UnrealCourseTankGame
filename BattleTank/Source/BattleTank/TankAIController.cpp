@@ -13,43 +13,31 @@ void ATankAIController::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (!GetControlledTank())
+	
 	{
 		UE_LOG(LogTemp, Error, TEXT("AI cannot PosessTank"));
 	}
-	
-
+	PlayerTank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	ControlledTank = Cast<ATank>(GetPawn());
 
 }
 
 void ATankAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	if (GetPlayerTank()) {
 
+	if (PlayerTank) {
 		//TODO MoveTwardsPlayer
 		AimAtPlayer();
+
 		//TODO FireIfReady
+		ControlledTank->Fire();
 	}
-}
-
-ATank*  ATankAIController::GetControlledTank() const
-{
-	return Cast<ATank>(GetPawn());
-}
-
-ATank* ATankAIController::GetPlayerTank() const
-{
-	auto PlayerTank = GetWorld()->GetFirstPlayerController()->GetPawn();
-	if (!PlayerTank) 
-	{
-		return nullptr;
-	}
-	return(Cast<ATank>(PlayerTank));
+	
 }
 
 void ATankAIController::AimAtPlayer()
 {	
-	GetControlledTank()->AimAt(GetPlayerTank()->GetActorLocation());
+	ControlledTank->AimAt(PlayerTank->GetActorLocation());
 }
 
